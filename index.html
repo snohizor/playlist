@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Playlist dynamique</title>
   <style>
     body {
@@ -25,14 +26,14 @@
     }
 
     table {
-      width: auto; /* desktop width auto */
+      width: auto;
       min-width: 300px;
       border-collapse: collapse;
       background-color: #2d2d44;
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      margin: 0 auto; /* CENTRER le tableau */
+      margin: 0 auto;
     }
 
     th, td {
@@ -74,16 +75,15 @@
       text-align: center;
     }
 
-    /* Media query pour petits écrans (mobile) */
     @media (max-width: 600px) {
       body {
         padding: 1rem;
       }
 
       table {
-        width: 100%; /* largeur 100% seulement sur mobile */
+        width: 100%;
         min-width: 0;
-        margin: 0; /* sur mobile, on enlève le margin auto pour éviter marge bizarre */
+        margin: 0;
       }
 
       th, td {
