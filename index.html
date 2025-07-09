@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Playlist dynamique</title>
   <style>
     body {
@@ -19,8 +19,13 @@
       color: #4fd1c5;
     }
 
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+    }
+
     table {
-      width: auto;
+      width: 100%;
       min-width: 300px;
       border-collapse: collapse;
       background-color: #2d2d44;
@@ -56,16 +61,31 @@
 
     td:nth-child(1) {
       text-align: center;
-      width: 40px;
+      width: auto;
     }
 
     td:nth-child(2) {
-      width: 200px;
+      width: auto;
     }
 
     td:nth-child(3) {
-      width: 80px;
+      width: auto;
       text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 1rem;
+      }
+
+      table {
+        min-width: 0;
+      }
+
+      th, td {
+        padding: 6px 8px;
+        white-space: normal;
+      }
     }
   </style>
 </head>
@@ -73,24 +93,26 @@
 
 <h2>🎶 Playlist</h2>
 
-<table id="songTable">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Song Name</th>
-      <th>Time</th>
-    </tr>
-  </thead>
-  <tbody id="songBody">
-    <!-- Généré dynamiquement -->
-  </tbody>
-  <tfoot>
-    <tr>
-      <td colspan="2">Total Time (selected)</td>
-      <td id="totalTime">0:00</td>
-    </tr>
-  </tfoot>
-</table>
+<div class="table-wrapper">
+  <table id="songTable">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Song Name</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody id="songBody">
+      <!-- Généré dynamiquement -->
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2">Total Time (selected)</td>
+        <td id="totalTime">0:00</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
 
 <script>
   const songs = [
