@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Playlist dynamique</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1e1e2f;
+      color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    h2 {
+      margin-bottom: 1rem;
+      color: #4fd1c5;
+    }
+
+    table {
+      width: auto;
+      min-width: 300px;
+      border-collapse: collapse;
+      background-color: #2d2d44;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    th, td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid #444;
+      white-space: nowrap;
+    }
+
+    thead {
+      background-color: #3e3e5e;
+    }
+
+    tfoot {
+      background-color: #3e3e5e;
+      font-weight: bold;
+      color: #4fd1c5;
+    }
+
+    tbody tr:hover {
+      background-color: #383857;
+    }
+
+    input[type="checkbox"] {
+      transform: scale(1.2);
+    }
+
+    td:nth-child(1) {
+      text-align: center;
+      width: 40px;
+    }
+
+    td:nth-child(2) {
+      width: 200px;
+    }
+
+    td:nth-child(3) {
+      width: 80px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🎶 Playlist</h2>
+
+<table id="songTable">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Song Name</th>
+      <th>Time</th>
+    </tr>
+  </thead>
+  <tbody id="songBody">
+    <!-- Généré dynamiquement -->
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="2">Total Time (selected)</td>
+      <td id="totalTime">0:00</td>
+    </tr>
+  </tfoot>
+</table>
+
+<script>
+  const songs = [
+    { name: "Birthright", time: "3.19" },
+    { name: "Bury me", time: "4.52" },
+    { name: "Evolve", time: "4.12" },
+    { name: "Falling", time: "4.23" },
+    { name: "Infectious", time: "3.19" },
+    { name: "Song 45", time: "3.08" },
+    { name: "Stand tall", time: "3.59" },
+    { name: "Stuck in place", time: "2.55" },
+    { name: "This day is mine", time: "3.40" }
+  ];
+
+  songs.sort((a, b) => a.name.localeCompare(b.name));
+
+  function createTable() {
+    const tbody = document.getElementById('songBody');
+    tbody.innerHTML = '';
+
+    songs.forEach(song => {
+      const row = document.createElement('tr');
+
+      row.innerHTML = `
+        <td><input type="checkbox" class="song-checkbox"></td>
+        <td>${song.name}</td>
+        <td class="time">${song.time}</td>
+      `;
+
+      tbody.appendChild(row);
+    });
+
+    document.querySelectorAll('.song-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', calculateSelectedTotalTime);
+    });
+
+    calculateSelectedTotalTime();
+  }
+
+  function calculateSelectedTotalTime() {
+    const checkboxes = document.querySelectorAll('.song-checkbox');
+    let totalSeconds = 0;
+
+    checkboxes.forEach(checkbox => {
+      if (checkbox.checked) {
+        const row = checkbox.closest('tr');
+        const timeText = row.querySelector('.time').textContent.trim();
+        const [minStr, secStr] = timeText.split('.');
+        const minutes = parseInt(minStr) || 0;
+        const seconds = parseInt((secStr || '0').padEnd(2, '0')) || 0;
+        totalSeconds += minutes * 60 + seconds;
+      }
+    });
+
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const remainingSeconds = totalSeconds % 60;
+
+    document.getElementById('totalTime').textContent =
+      `${totalMinutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
+
+  document.addEventListener('DOMContentLoaded', createTable);
+</script>
+
+</body>
+</html>
