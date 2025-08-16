@@ -149,6 +149,26 @@
   </table>
 </div>
 
+<h2>Other</h2>
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Song Name</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody id="other"></tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2">Total Time (selected)</td>
+        <td id="totalOther">0:00</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
 <script>
   const songs = {
     conflictions: [
@@ -166,8 +186,8 @@
       { name: "Bury me", time: "4:52" }
     ],
     singles: [
-      { name: "Birthright", time: "3:19" },
-      { name: "Stand tall", time: "3:59" }
+      { name: "Birthright Master V2 MP3", time: "3:19" },
+      { name: "Stand tall Master V2 MP3", time: "3:59" }
     ],
     evolve: [
       { name: "Infectious", time: "3:20" },
@@ -176,8 +196,8 @@
       { name: "Evolve", time: "4:02" },
       { name: "Break the frame", time: "3:34" }
     ],
-	other: [
-      { name: "Overthrown", time: "3:58" },
+    other: [
+      { name: "Overthrown", time: "3:58" }
     ]
   };
 
@@ -227,7 +247,7 @@
   }
 
   function updateGrandTotal() {
-    const totals = ["totalConflictions", "totalSingles", "totalEvolve"];
+    const totals = ["totalConflictions", "totalSingles", "totalEvolve", "totalOther"];
     let totalSeconds = 0;
 
     totals.forEach(id => {
@@ -249,6 +269,7 @@
     createTable('conflictions', songs.conflictions, 'totalConflictions');
     createTable('singles', songs.singles, 'totalSingles');
     createTable('evolve', songs.evolve, 'totalEvolve');
+    createTable('other', songs.other, 'totalOther');
   });
 </script>
 
