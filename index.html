@@ -15,14 +15,23 @@
       padding: 2rem;
     }
 
+    h1 {
+      font-size: 1.8rem;
+      color: #ffcc00;
+      margin-bottom: 1.5rem;
+    }
+
     h2 {
+      margin-top: 2rem;
       margin-bottom: 1rem;
       color: #4fd1c5;
+      font-size: 1.2rem; /* moins gros */
     }
 
     .table-wrapper {
       width: 100%;
       overflow-x: auto;
+      margin-bottom: 2rem;
     }
 
     table {
@@ -74,31 +83,15 @@
       width: 80px;
       text-align: center;
     }
-
-    @media (max-width: 600px) {
-      body {
-        padding: 1rem;
-      }
-
-      table {
-        width: 100%;
-        min-width: 0;
-        margin: 0;
-      }
-
-      th, td {
-        padding: 6px 8px;
-        white-space: normal;
-      }
-    }
   </style>
 </head>
 <body>
 
-<h2>🎶 Playlist</h2>
+<h1>🔊 TOTAL = <span id="grandTotal">0:00</span></h1>
 
+<h2>Conflictions</h2>
 <div class="table-wrapper">
-  <table id="songTable">
+  <table>
     <thead>
       <tr>
         <th></th>
@@ -106,67 +99,117 @@
         <th>Time</th>
       </tr>
     </thead>
-    <tbody id="songBody">
-      <!-- Généré dynamiquement -->
-    </tbody>
+    <tbody id="conflictions"></tbody>
     <tfoot>
       <tr>
         <td colspan="2">Total Time (selected)</td>
-        <td id="totalTime">0:00</td>
+        <td id="totalConflictions">0:00</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<h2>Singles</h2>
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Song Name</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody id="singles"></tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2">Total Time (selected)</td>
+        <td id="totalSingles">0:00</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<h2>EP - Evolve</h2>
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Song Name</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody id="evolve"></tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2">Total Time (selected)</td>
+        <td id="totalEvolve">0:00</td>
       </tr>
     </tfoot>
   </table>
 </div>
 
 <script>
-  const songs = [
-    { name: "Birthright", time: "3.19" },
-    { name: "Bury me", time: "4.52" },
-    { name: "Evolve", time: "4.12" },
-    { name: "Falling", time: "4.23" },
-    { name: "Infectious", time: "3.19" },
-    { name: "Song 45", time: "3.08" },
-    { name: "Stand tall", time: "3.59" },
-    { name: "Stuck in place", time: "2.55" },
-    { name: "This day is mine", time: "3.40" }
-  ];
+  const songs = {
+    conflictions: [
+      { name: "This day is mine", time: "3:40" },
+      { name: "Exposed", time: "3:45" },
+      { name: "Falling", time: "4:23" },
+      { name: "From the brink", time: "3:49" },
+      { name: "Upon me", time: "4:46" },
+      { name: "Turned to stone", time: "2:22" },
+      { name: "Alone", time: "4:26" },
+      { name: "Gloomflower", time: "2:41" },
+      { name: "Escape", time: "4:28" },
+      { name: "Dogma", time: "3:01" },
+      { name: "Brainwashed", time: "4:08" },
+      { name: "Bury me", time: "4:52" }
+    ],
+    singles: [
+      { name: "Birthright", time: "3:19" },
+      { name: "Stand tall", time: "3:59" }
+    ],
+    evolve: [
+      { name: "Infectious", time: "3:20" },
+      { name: "Stuck in place", time: "2:54" },
+      { name: "Call to rise", time: "3:09" },
+      { name: "Evolve", time: "4:02" },
+      { name: "Break the frame", time: "3:34" }
+    ]
+  };
 
-  songs.sort((a, b) => a.name.localeCompare(b.name));
-
-  function createTable() {
-    const tbody = document.getElementById('songBody');
+  function createTable(categoryId, data, totalId) {
+    const tbody = document.getElementById(categoryId);
     tbody.innerHTML = '';
 
-    songs.forEach(song => {
+    data.forEach(song => {
       const row = document.createElement('tr');
-
       row.innerHTML = `
         <td><input type="checkbox" class="song-checkbox"></td>
         <td>${song.name}</td>
         <td class="time">${song.time}</td>
       `;
-
       tbody.appendChild(row);
     });
 
-    document.querySelectorAll('.song-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('change', calculateSelectedTotalTime);
+    tbody.querySelectorAll('.song-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', () => calculateSelectedTotalTime(categoryId, totalId));
     });
 
-    calculateSelectedTotalTime();
+    calculateSelectedTotalTime(categoryId, totalId);
   }
 
-  function calculateSelectedTotalTime() {
-    const checkboxes = document.querySelectorAll('.song-checkbox');
+  function calculateSelectedTotalTime(categoryId, totalId) {
+    const checkboxes = document.querySelectorAll(`#${categoryId} .song-checkbox`);
     let totalSeconds = 0;
 
     checkboxes.forEach(checkbox => {
       if (checkbox.checked) {
         const row = checkbox.closest('tr');
         const timeText = row.querySelector('.time').textContent.trim();
-        const [minStr, secStr] = timeText.split('.');
+        const [minStr, secStr] = timeText.split(':');
         const minutes = parseInt(minStr) || 0;
-        const seconds = parseInt((secStr || '0').padEnd(2, '0')) || 0;
+        const seconds = parseInt(secStr) || 0;
         totalSeconds += minutes * 60 + seconds;
       }
     });
@@ -174,11 +217,36 @@
     const totalMinutes = Math.floor(totalSeconds / 60);
     const remainingSeconds = totalSeconds % 60;
 
-    document.getElementById('totalTime').textContent =
+    document.getElementById(totalId).textContent =
+      `${totalMinutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+
+    updateGrandTotal();
+  }
+
+  function updateGrandTotal() {
+    const totals = ["totalConflictions", "totalSingles", "totalEvolve"];
+    let totalSeconds = 0;
+
+    totals.forEach(id => {
+      const timeText = document.getElementById(id).textContent.trim();
+      const [minStr, secStr] = timeText.split(':');
+      const minutes = parseInt(minStr) || 0;
+      const seconds = parseInt(secStr) || 0;
+      totalSeconds += minutes * 60 + seconds;
+    });
+
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const remainingSeconds = totalSeconds % 60;
+
+    document.getElementById("grandTotal").textContent =
       `${totalMinutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   }
 
-  document.addEventListener('DOMContentLoaded', createTable);
+  document.addEventListener('DOMContentLoaded', () => {
+    createTable('conflictions', songs.conflictions, 'totalConflictions');
+    createTable('singles', songs.singles, 'totalSingles');
+    createTable('evolve', songs.evolve, 'totalEvolve');
+  });
 </script>
 
 </body>
